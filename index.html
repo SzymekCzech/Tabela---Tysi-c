@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gra Tysiąc - Punkty</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Gra Tysiąc - Punkty</h1>
+    <div id="setupForm">
+        <h2>Ustaw imiona graczy:</h2>
+        <label for="player1">Gracz 1:</label>
+        <input type="text" id="player1" placeholder="Imię gracza 1"><br><br>
+
+        <label for="player2">Gracz 2:</label>
+        <input type="text" id="player2" placeholder="Imię gracza 2"><br><br>
+
+        <label for="player3">Gracz 3:</label>
+        <input type="text" id="player3" placeholder="Imię gracza 3"><br><br>
+
+        <button onclick="startGame()">Rozpocznij grę</button>
+    </div>
+
+    <div id="gameSection" class="hidden">
+        <table id="scoreTable">
+            <thead>
+                <tr>
+                    <th id="playerName1">Gracz 1</th>
+                    <th id="playerName2">Gracz 2</th>
+                    <th id="playerName3">Gracz 3</th>
+                </tr>
+            </thead>
+            <tbody id="pointsTableBody">
+                <tr>
+                    <td class="scoreCell">0</td>
+                    <td class="scoreCell">0</td>
+                    <td class="scoreCell">0</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        <input type="number" id="pointsInput1" placeholder="Punkty">
+                        <button onclick="addPoints(0)">Dodaj</button>
+                    </td>
+                    <td>
+                        <input type="number" id="pointsInput2" placeholder="Punkty">
+                        <button onclick="addPoints(1)">Dodaj</button>
+                    </td>
+                    <td>
+                        <input type="number" id="pointsInput3" placeholder="Punkty">
+                        <button onclick="addPoints(2)">Dodaj</button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <p id="message"></p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
