@@ -1,5 +1,6 @@
 let currentRound = 1;
 const scores = [0, 0, 0];
+const totalPositiveScores = [0, 0, 0];
 const bombUsed = [false, false, false];
 let roundHistory = [];
 let gameEnded = false;
@@ -44,6 +45,7 @@ function resetGame() {
     `;
 
     scores.fill(0);
+    totalPositiveScores.fill(0);
     currentRound = 1;
     roundHistory = [];
     bombUsed.fill(false);
@@ -59,9 +61,13 @@ function addPoints() {
     const pointsInput2 = parseInt(document.getElementById("pointsInput2").value) || 0;
     const pointsInput3 = parseInt(document.getElementById("pointsInput3").value) || 0;
 
-    scores[0] += pointsInput1;
-    scores[1] += pointsInput2;
-    scores[2] += pointsInput3;
+    const roundScores = [pointsInput1, pointsInput2, pointsInput3];
+    roundScores.forEach((points, index) => {
+        scores[index] += points;
+        if (points > 0) totalPositiveScores[index] += points;
+    });
+
+    roundHistory.push({ round: currentRound, scores: [...roundScores], bombInfo: "" });
 
     addNewRoundRow();
     currentRound++;
@@ -91,11 +97,10 @@ function addNewRoundRow(bombInfo = "") {
     });
 
     pointsTableBody.insertBefore(newRow, pointsTableBody.lastElementChild);
-    roundHistory.push([...scores]);
 }
 
 function updateTotalScores() {
-    scores.forEach((score, index) => {
+    totalPositiveScores.forEach((score, index) => {
         document.getElementById(`totalPoints${index + 1}`).textContent = score;
     });
 }
@@ -110,11 +115,32 @@ function useBomb(playerIndex) {
     const bombInfo = `BOMBA (${document.getElementById(`playerName${playerIndex + 1}`).textContent})`;
 
     scores.forEach((_, index) => {
-        if (index !== playerIndex) scores[index] += 60;
+        if (index !== playerIndex) {
+            scores[index] += 60;
+            totalPositiveScores[index] += 60;
+        }
     });
-    scores[playerIndex] += 0;
 
+    roundHistory.push({ round: currentRound, scores: [...scores], bombInfo });
     addNewRoundRow(bombInfo);
+    currentRound++;
+
+    updateTotalScores();
+}
+
+function undoRound() {
+    if (roundHistory.length === 0 || gameEnded) return;
+
+    const lastRound = roundHistory.pop();
+    lastRound.scores.forEach((points, index) => {
+        scores[index] -= points;
+        if (points > 0) totalPositiveScores[index] -= points;
+    });
+
+    const pointsTableBody = document.getElementById("pointsTableBody");
+    pointsTableBody.deleteRow(pointsTableBody.rows.length - 2); // Usuń ostatni dodany wiersz
+    currentRound--;
+
     updateTotalScores();
 }
 
@@ -127,6 +153,5 @@ function checkForWinner() {
     }
 }
 
-}
 
 
