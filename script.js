@@ -1,9 +1,8 @@
-let currentRound = 1; 
-const scores = [0, 0, 0]; 
+let currentRound = 1;
+const scores = [0, 0, 0];
 const bombUsed = [false, false, false];
 let roundHistory = [];
 let gameEnded = false;
-let bonusEnabled = [false, false, false];
 
 function startGame() {
     const player1Name = document.getElementById("player1").value.trim();
@@ -19,6 +18,10 @@ function startGame() {
     document.getElementById("playerName2").textContent = player2Name;
     document.getElementById("playerName3").textContent = player3Name;
 
+    document.getElementById("totalPlayerName1").textContent = player1Name;
+    document.getElementById("totalPlayerName2").textContent = player2Name;
+    document.getElementById("totalPlayerName3").textContent = player3Name;
+
     document.getElementById("bombButton1").textContent = `Bomba ${player1Name}`;
     document.getElementById("bombButton2").textContent = `Bomba ${player2Name}`;
     document.getElementById("bombButton3").textContent = `Bomba ${player3Name}`;
@@ -26,11 +29,10 @@ function startGame() {
     document.getElementById("setupForm").style.display = "none";
     document.getElementById("gameSection").style.display = "block";
 
-    resetTable();
-    updateTotalScores();
+    resetGame();
 }
 
-function resetTable() {
+function resetGame() {
     const pointsTableBody = document.getElementById("pointsTableBody");
     pointsTableBody.innerHTML = `
         <tr>
@@ -46,7 +48,8 @@ function resetTable() {
     roundHistory = [];
     bombUsed.fill(false);
     gameEnded = false;
-    bonusEnabled.fill(false);
+
+    updateTotalScores();
 }
 
 function addPoints() {
@@ -68,7 +71,6 @@ function addPoints() {
     document.getElementById("pointsInput3").value = "";
 
     updateTotalScores();
-    checkForBonusGame();
     checkForWinner();
 }
 
@@ -83,11 +85,8 @@ function addNewRoundRow(bombInfo = "") {
     scores.forEach((score, index) => {
         const scoreCell = document.createElement("td");
         scoreCell.textContent = score;
-
         if (score < 0) scoreCell.classList.add("negative");
         if (bombUsed[index]) scoreCell.style.fontWeight = "bold";
-        if (bonusEnabled[index]) scoreCell.style.textDecoration = "line-through";
-
         newRow.appendChild(scoreCell);
     });
 
@@ -96,40 +95,27 @@ function addNewRoundRow(bombInfo = "") {
 }
 
 function updateTotalScores() {
-    const totalScoresTable = document.getElementById("totalScores");
-    totalScoresTable.innerHTML = `
-        <tr>
-            <td>${scores[0]}</td>
-            <td>${scores[1]}</td>
-            <td>${scores[2]}</td>
-        </tr>
-    `;
-}
-
-function checkForBonusGame() {
     scores.forEach((score, index) => {
-        if (score >= 800 && score < 1000) {
-            bonusEnabled[index] = true;
-            document.getElementById(`playerName${index + 1}`).style.textDecoration = "line-through";
-        } else {
-            bonusEnabled[index] = false;
-            document.getElementById(`playerName${index + 1}`).style.textDecoration = "none";
-        }
+        document.getElementById(`totalPoints${index + 1}`).textContent = score;
     });
 }
 
-function useBonus(playerIndex) {
-    if (!bonusEnabled[playerIndex]) {
-        alert("Ten gracz nie kwalifikuje się do gry pod kreską!");
+function useBomb(playerIndex) {
+    if (bombUsed[playerIndex]) {
+        alert("Gracz już użył bomby!");
         return;
     }
 
-    const bonusPoints = 1000 - scores[playerIndex];
-    scores[playerIndex] += bonusPoints;
+    bombUsed[playerIndex] = true;
+    const bombInfo = `BOMBA (${document.getElementById(`playerName${playerIndex + 1}`).textContent})`;
 
-    addNewRoundRow(`BONUS (${document.getElementById(`playerName${playerIndex + 1}`).textContent})`);
+    scores.forEach((_, index) => {
+        if (index !== playerIndex) scores[index] += 60;
+    });
+    scores[playerIndex] += 0;
+
+    addNewRoundRow(bombInfo);
     updateTotalScores();
-    checkForWinner();
 }
 
 function checkForWinner() {
@@ -139,6 +125,8 @@ function checkForWinner() {
         alert(`Gratulacje! ${playerName} wygrał grę z wynikiem ${scores[winnerIndex]} punktów!`);
         gameEnded = true;
     }
+}
+
 }
 
 
