@@ -20,6 +20,7 @@
         </div>
 
         <div id="gameSection" style="display: none;">
+            <h2>Rozgrywka</h2>
             <table id="mainTable">
                 <thead>
                     <tr>
@@ -46,7 +47,22 @@
             <button onclick="useBomb(2)" id="bombButton3">Bomba</button>
 
             <h2>Całkowita Liczba Punktów</h2>
-            <table id="totalScores"></table>
+            <table id="totalScores">
+                <thead>
+                    <tr>
+                        <th id="totalPlayerName1"></th>
+                        <th id="totalPlayerName2"></th>
+                        <th id="totalPlayerName3"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="totalPoints1">0</td>
+                        <td id="totalPoints2">0</td>
+                        <td id="totalPoints3">0</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <script src="script.js"></script>
