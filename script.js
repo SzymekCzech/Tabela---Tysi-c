@@ -20,6 +20,11 @@ function startGame() {
     document.getElementById("playerName2").textContent = player2Name;
     document.getElementById("playerName3").textContent = player3Name;
 
+    // Ustaw nazwy graczy w przyciskach bomb
+    document.getElementById("bombButton1").textContent = `Bomba ${player1Name}`;
+    document.getElementById("bombButton2").textContent = `Bomba ${player2Name}`;
+    document.getElementById("bombButton3").textContent = `Bomba ${player3Name}`;
+
     // Pokaż sekcję gry i ukryj formularz startowy
     document.getElementById("setupForm").style.display = "none";
     document.getElementById("gameSection").style.display = "block";
@@ -61,12 +66,12 @@ function addPoints() {
     document.getElementById("pointsInput3").value = "";
 }
 
-function addNewRoundRow() {
+function addNewRoundRow(bombInfo = "") {
     const pointsTableBody = document.getElementById("pointsTableBody");
 
     const newRow = document.createElement("tr");
     const roundCell = document.createElement("td");
-    roundCell.textContent = currentRound;
+    roundCell.textContent = `${currentRound} ${bombInfo}`;
     newRow.appendChild(roundCell);
 
     scores.forEach((score, index) => {
@@ -106,6 +111,8 @@ function useBomb(playerIndex) {
         return;
     }
 
+    const playerName = document.getElementById(`playerName${playerIndex + 1}`).textContent;
+
     bombUsed[playerIndex] = true;
     const bombScores = [60, 60, 60];
     bombScores[playerIndex] = 0;
@@ -114,6 +121,7 @@ function useBomb(playerIndex) {
     scores[1] += bombScores[1];
     scores[2] += bombScores[2];
 
-    addNewRoundRow();
+    addNewRoundRow(`BOMBA (${playerName})`);
     currentRound++;
 }
+
