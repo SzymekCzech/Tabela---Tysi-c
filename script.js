@@ -13,12 +13,35 @@ function startGame() {
         return;
     }
 
+    // Ustaw imiona graczy w tabeli
     document.getElementById("playerName1").textContent = player1Name;
     document.getElementById("playerName2").textContent = player2Name;
     document.getElementById("playerName3").textContent = player3Name;
 
+    // Pokaż sekcję gry i ukryj formularz ustawień
     document.getElementById("setupForm").classList.add("hidden");
     document.getElementById("gameSection").classList.remove("hidden");
+
+    // Zresetuj tabelę do stanu początkowego
+    resetTable();
+}
+
+function resetTable() {
+    const pointsTableBody = document.getElementById("pointsTableBody");
+    pointsTableBody.innerHTML = `
+        <tr>
+            <td>+</td>
+            <td><input type="number" id="pointsInput1" /></td>
+            <td><input type="number" id="pointsInput2" /></td>
+            <td><input type="number" id="pointsInput3" /></td>
+        </tr>
+    `;
+
+    // Resetuj stany gry
+    scores.fill(0);
+    currentRound = 1;
+    roundHistory = [];
+    bombUsed.fill(false);
 }
 
 function addNewRoundRow() {
@@ -39,7 +62,7 @@ function addNewRoundRow() {
         newRow.appendChild(scoreCell);
     });
 
-    pointsTableBody.appendChild(newRow);
+    pointsTableBody.insertBefore(newRow, pointsTableBody.lastElementChild);
     roundHistory.push([...scores]);
 }
 
@@ -68,12 +91,12 @@ function undoRound() {
         return;
     }
 
-    scores[0] = roundHistory[roundHistory.length - 1][0];
-    scores[1] = roundHistory[roundHistory.length - 1][1];
-    scores[2] = roundHistory[roundHistory.length - 1][2];
-
-    pointsTableBody.deleteRow(pointsTableBody.rows.length - 1);
     roundHistory.pop();
+    scores[0] = roundHistory.length > 0 ? roundHistory[roundHistory.length - 1][0] : 0;
+    scores[1] = roundHistory.length > 0 ? roundHistory[roundHistory.length - 1][1] : 0;
+    scores[2] = roundHistory.length > 0 ? roundHistory[roundHistory.length - 1][2] : 0;
+
+    pointsTableBody.removeChild(pointsTableBody.children[pointsTableBody.children.length - 2]);
     currentRound--;
 }
 
@@ -93,8 +116,4 @@ function useBomb(playerIndex) {
 
     addNewRoundRow();
     currentRound++;
-}
-
-    roundHistory.pop();
-    currentRound--;
 }
