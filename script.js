@@ -1,6 +1,6 @@
-let currentRound = 1; // Numer rundy
-const scores = [0, 0, 0]; // Punkty dla każdego gracza
-const bombUsed = [false, false, false]; // Czy gracz użył bomby
+let currentRound = 1; // Numer aktualnej rundy
+const scores = [0, 0, 0]; // Punkty graczy
+const bombUsed = [false, false, false]; // Status bomb
 let roundHistory = []; // Historia rund (do cofania)
 
 function startGame() {
@@ -9,22 +9,21 @@ function startGame() {
     const player2Name = document.getElementById("player2").value.trim();
     const player3Name = document.getElementById("player3").value.trim();
 
-    // Sprawdź, czy wszystkie pola zostały wypełnione
+    // Sprawdź, czy wszystkie pola zostały uzupełnione
     if (!player1Name || !player2Name || !player3Name) {
         alert("Wpisz imiona wszystkich graczy, aby rozpocząć grę!");
         return;
     }
 
-    // Ustaw imiona w tabeli
+    // Ustaw imiona graczy w tabeli
     document.getElementById("playerName1").textContent = player1Name;
     document.getElementById("playerName2").textContent = player2Name;
     document.getElementById("playerName3").textContent = player3Name;
 
-    // Ukryj formularz ustawień i pokaż sekcję gry
+    // Pokaż sekcję gry i ukryj formularz startowy
     document.getElementById("setupForm").style.display = "none";
     document.getElementById("gameSection").style.display = "block";
 
-    // Zresetuj tabelę do stanu początkowego
     resetTable();
 }
 
@@ -39,33 +38,10 @@ function resetTable() {
         </tr>
     `;
 
-    // Resetuj stany gry
     scores.fill(0);
     currentRound = 1;
     roundHistory = [];
     bombUsed.fill(false);
-}
-
-function addNewRoundRow() {
-    const pointsTableBody = document.getElementById("pointsTableBody");
-
-    const newRow = document.createElement("tr");
-    const roundCell = document.createElement("td");
-    roundCell.textContent = currentRound;
-    newRow.appendChild(roundCell);
-
-    [scores[0], scores[1], scores[2]].forEach((score, index) => {
-        const scoreCell = document.createElement("td");
-        scoreCell.textContent = score;
-
-        if (score < 0) scoreCell.classList.add("negative");
-        if (bombUsed[index]) scoreCell.style.fontWeight = "bold";
-
-        newRow.appendChild(scoreCell);
-    });
-
-    pointsTableBody.insertBefore(newRow, pointsTableBody.lastElementChild);
-    roundHistory.push([...scores]);
 }
 
 function addPoints() {
@@ -85,6 +61,28 @@ function addPoints() {
     document.getElementById("pointsInput3").value = "";
 }
 
+function addNewRoundRow() {
+    const pointsTableBody = document.getElementById("pointsTableBody");
+
+    const newRow = document.createElement("tr");
+    const roundCell = document.createElement("td");
+    roundCell.textContent = currentRound;
+    newRow.appendChild(roundCell);
+
+    scores.forEach((score, index) => {
+        const scoreCell = document.createElement("td");
+        scoreCell.textContent = score;
+
+        if (score < 0) scoreCell.classList.add("negative");
+        if (bombUsed[index]) scoreCell.style.fontWeight = "bold";
+
+        newRow.appendChild(scoreCell);
+    });
+
+    pointsTableBody.insertBefore(newRow, pointsTableBody.lastElementChild);
+    roundHistory.push([...scores]);
+}
+
 function undoRound() {
     const pointsTableBody = document.getElementById("pointsTableBody");
 
@@ -94,9 +92,9 @@ function undoRound() {
     }
 
     roundHistory.pop();
-    scores[0] = roundHistory.length > 0 ? roundHistory[roundHistory.length - 1][0] : 0;
-    scores[1] = roundHistory.length > 0 ? roundHistory[roundHistory.length - 1][1] : 0;
-    scores[2] = roundHistory.length > 0 ? roundHistory[roundHistory.length - 1][2] : 0;
+    scores[0] = roundHistory.length ? roundHistory[roundHistory.length - 1][0] : 0;
+    scores[1] = roundHistory.length ? roundHistory[roundHistory.length - 1][1] : 0;
+    scores[2] = roundHistory.length ? roundHistory[roundHistory.length - 1][2] : 0;
 
     pointsTableBody.removeChild(pointsTableBody.children[pointsTableBody.children.length - 2]);
     currentRound--;
