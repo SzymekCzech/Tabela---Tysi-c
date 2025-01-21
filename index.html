@@ -3,54 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gra Tysiąc</title>
+    <title>Gra w Tysiąca</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="setupForm">
-        <h1>Gra Tysiąc</h1>
-        <label for="player1">Gracz 1: </label>
-        <input type="text" id="player1" placeholder="Imię gracza 1">
-        <br>
-        <label for="player2">Gracz 2: </label>
-        <input type="text" id="player2" placeholder="Imię gracza 2">
-        <br>
-        <label for="player3">Gracz 3: </label>
-        <input type="text" id="player3" placeholder="Imię gracza 3">
-        <br>
-        <button onclick="startGame()">Rozpocznij grę</button>
-    </div>
+    <div class="container">
+        <div id="setupForm">
+            <h1>Rozpocznij Grę</h1>
+            <label for="player1">Gracz 1:</label>
+            <input type="text" id="player1"><br>
+            <label for="player2">Gracz 2:</label>
+            <input type="text" id="player2"><br>
+            <label for="player3">Gracz 3:</label>
+            <input type="text" id="player3"><br>
+            <button onclick="startGame()">Rozpocznij Grę</button>
+        </div>
 
-    <div id="gameSection" style="display: none;">
-        <h2>Gra Tysiąc</h2>
-        <table id="pointsTable">
-            <thead>
-                <tr>
-                    <th>Runda</th>
-                    <th id="playerName1"></th>
-                    <th id="playerName2"></th>
-                    <th id="playerName3"></th>
-                </tr>
-            </thead>
-            <tbody id="pointsTableBody">
-                <tr>
-                    <td>+</td>
-                    <td><input type="number" id="pointsInput1" /></td>
-                    <td><input type="number" id="pointsInput2" /></td>
-                    <td><input type="number" id="pointsInput3" /></td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="buttons">
-            <button onclick="addPoints()">Dodaj punkty</button>
-            <button onclick="undoRound()">Cofnij rundę</button>
-            <button id="bombButton1" onclick="useBomb(0)">Bomba</button>
-            <button id="bombButton2" onclick="useBomb(1)">Bomba</button>
-            <button id="bombButton3" onclick="useBomb(2)">Bomba</button>
+        <div id="gameSection" style="display: none;">
+            <table id="mainTable">
+                <thead>
+                    <tr>
+                        <th>Runda</th>
+                        <th id="playerName1"></th>
+                        <th id="playerName2"></th>
+                        <th id="playerName3"></th>
+                    </tr>
+                </thead>
+                <tbody id="pointsTableBody">
+                    <tr>
+                        <td>+</td>
+                        <td><input type="number" id="pointsInput1"></td>
+                        <td><input type="number" id="pointsInput2"></td>
+                        <td><input type="number" id="pointsInput3"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <button onclick="addPoints()">Dodaj Punkty</button>
+            <button onclick="undoRound()">Cofnij Rundę</button>
+            <button onclick="useBomb(0)" id="bombButton1">Bomba</button>
+            <button onclick="useBomb(1)" id="bombButton2">Bomba</button>
+            <button onclick="useBomb(2)" id="bombButton3">Bomba</button>
+
+            <h2>Całkowita Liczba Punktów</h2>
+            <table id="totalScores"></table>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
-
