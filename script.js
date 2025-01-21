@@ -2,6 +2,7 @@ let currentRound = 1; // Numer aktualnej rundy
 const scores = [0, 0, 0]; // Punkty graczy
 const bombUsed = [false, false, false]; // Status bomb
 let roundHistory = []; // Historia rund (do cofania)
+let gameEnded = false; // Czy gra została zakończona? // DODANO
 
 function startGame() {
     // Pobierz imiona graczy
@@ -47,9 +48,12 @@ function resetTable() {
     currentRound = 1;
     roundHistory = [];
     bombUsed.fill(false);
+    gameEnded = false; // Reset zakończenia gry // DODANO
 }
 
 function addPoints() {
+    if (gameEnded) return; // Zablokuj dodawanie punktów, jeśli gra się skończyła // DODANO
+
     const pointsInput1 = parseInt(document.getElementById("pointsInput1").value) || 0;
     const pointsInput2 = parseInt(document.getElementById("pointsInput2").value) || 0;
     const pointsInput3 = parseInt(document.getElementById("pointsInput3").value) || 0;
@@ -64,6 +68,8 @@ function addPoints() {
     document.getElementById("pointsInput1").value = "";
     document.getElementById("pointsInput2").value = "";
     document.getElementById("pointsInput3").value = "";
+
+    checkForWinner(); // Sprawdź, czy ktoś wygrał // DODANO
 }
 
 function addNewRoundRow(bombInfo = "") {
@@ -89,6 +95,8 @@ function addNewRoundRow(bombInfo = "") {
 }
 
 function undoRound() {
+    if (gameEnded) return; // Zablokuj cofanie rund, jeśli gra się skończyła // DODANO
+
     const pointsTableBody = document.getElementById("pointsTableBody");
 
     if (roundHistory.length === 0) {
@@ -106,6 +114,8 @@ function undoRound() {
 }
 
 function useBomb(playerIndex) {
+    if (gameEnded) return; // Zablokuj użycie bomby, jeśli gra się skończyła // DODANO
+
     if (bombUsed[playerIndex]) {
         alert("Ten gracz już użył bomby!");
         return;
@@ -123,5 +133,16 @@ function useBomb(playerIndex) {
 
     addNewRoundRow(`BOMBA (${playerName})`);
     currentRound++;
+
+    checkForWinner(); // Sprawdź, czy ktoś wygrał po użyciu bomby // DODANO
+}
+
+function checkForWinner() { // DODANO
+    const winnerIndex = scores.findIndex(score => score >= 1000);
+    if (winnerIndex !== -1) {
+        const playerName = document.getElementById(`playerName${winnerIndex + 1}`).textContent;
+        alert(`Gratulacje! ${playerName} wygrał grę z wynikiem ${scores[winnerIndex]} punktów!`);
+        gameEnded = true; // Zablokuj grę
+    }
 }
 
