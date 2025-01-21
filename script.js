@@ -4,23 +4,25 @@ const bombUsed = [false, false, false]; // Czy gracz użył bomby
 let roundHistory = []; // Historia rund (do cofania)
 
 function startGame() {
+    // Pobierz imiona graczy
     const player1Name = document.getElementById("player1").value.trim();
     const player2Name = document.getElementById("player2").value.trim();
     const player3Name = document.getElementById("player3").value.trim();
 
+    // Sprawdź, czy wszystkie pola zostały wypełnione
     if (!player1Name || !player2Name || !player3Name) {
         alert("Wpisz imiona wszystkich graczy, aby rozpocząć grę!");
         return;
     }
 
-    // Ustaw imiona graczy w tabeli
+    // Ustaw imiona w tabeli
     document.getElementById("playerName1").textContent = player1Name;
     document.getElementById("playerName2").textContent = player2Name;
     document.getElementById("playerName3").textContent = player3Name;
 
-    // Pokaż sekcję gry i ukryj formularz ustawień
-    document.getElementById("setupForm").classList.add("hidden");
-    document.getElementById("gameSection").classList.remove("hidden");
+    // Ukryj formularz ustawień i pokaż sekcję gry
+    document.getElementById("setupForm").style.display = "none";
+    document.getElementById("gameSection").style.display = "block";
 
     // Zresetuj tabelę do stanu początkowego
     resetTable();
