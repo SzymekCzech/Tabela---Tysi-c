@@ -1,36 +1,33 @@
-let currentRound = 1; // Numer aktualnej rundy
-const scores = [0, 0, 0]; // Punkty graczy
-const bombUsed = [false, false, false]; // Status bomb
-let roundHistory = []; // Historia rund (do cofania)
-let gameEnded = false; // Czy gra została zakończona? // DODANO
+let currentRound = 1; 
+const scores = [0, 0, 0]; 
+const bombUsed = [false, false, false];
+let roundHistory = [];
+let gameEnded = false;
+let bonusEnabled = [false, false, false];
 
 function startGame() {
-    // Pobierz imiona graczy
     const player1Name = document.getElementById("player1").value.trim();
     const player2Name = document.getElementById("player2").value.trim();
     const player3Name = document.getElementById("player3").value.trim();
 
-    // Sprawdź, czy wszystkie pola zostały uzupełnione
     if (!player1Name || !player2Name || !player3Name) {
         alert("Wpisz imiona wszystkich graczy, aby rozpocząć grę!");
         return;
     }
 
-    // Ustaw imiona graczy w tabeli
     document.getElementById("playerName1").textContent = player1Name;
     document.getElementById("playerName2").textContent = player2Name;
     document.getElementById("playerName3").textContent = player3Name;
 
-    // Ustaw nazwy graczy w przyciskach bomb
     document.getElementById("bombButton1").textContent = `Bomba ${player1Name}`;
     document.getElementById("bombButton2").textContent = `Bomba ${player2Name}`;
     document.getElementById("bombButton3").textContent = `Bomba ${player3Name}`;
 
-    // Pokaż sekcję gry i ukryj formularz startowy
     document.getElementById("setupForm").style.display = "none";
     document.getElementById("gameSection").style.display = "block";
 
     resetTable();
+    updateTotalScores();
 }
 
 function resetTable() {
@@ -48,11 +45,12 @@ function resetTable() {
     currentRound = 1;
     roundHistory = [];
     bombUsed.fill(false);
-    gameEnded = false; // Reset zakończenia gry // DODANO
+    gameEnded = false;
+    bonusEnabled.fill(false);
 }
 
 function addPoints() {
-    if (gameEnded) return; // Zablokuj dodawanie punktów, jeśli gra się skończyła // DODANO
+    if (gameEnded) return;
 
     const pointsInput1 = parseInt(document.getElementById("pointsInput1").value) || 0;
     const pointsInput2 = parseInt(document.getElementById("pointsInput2").value) || 0;
@@ -69,7 +67,9 @@ function addPoints() {
     document.getElementById("pointsInput2").value = "";
     document.getElementById("pointsInput3").value = "";
 
-    checkForWinner(); // Sprawdź, czy ktoś wygrał // DODANO
+    updateTotalScores();
+    checkForBonusGame();
+    checkForWinner();
 }
 
 function addNewRoundRow(bombInfo = "") {
@@ -86,6 +86,7 @@ function addNewRoundRow(bombInfo = "") {
 
         if (score < 0) scoreCell.classList.add("negative");
         if (bombUsed[index]) scoreCell.style.fontWeight = "bold";
+        if (bonusEnabled[index]) scoreCell.style.textDecoration = "line-through";
 
         newRow.appendChild(scoreCell);
     });
@@ -94,55 +95,50 @@ function addNewRoundRow(bombInfo = "") {
     roundHistory.push([...scores]);
 }
 
-function undoRound() {
-    if (gameEnded) return; // Zablokuj cofanie rund, jeśli gra się skończyła // DODANO
+function updateTotalScores() {
+    const totalScoresTable = document.getElementById("totalScores");
+    totalScoresTable.innerHTML = `
+        <tr>
+            <td>${scores[0]}</td>
+            <td>${scores[1]}</td>
+            <td>${scores[2]}</td>
+        </tr>
+    `;
+}
 
-    const pointsTableBody = document.getElementById("pointsTableBody");
+function checkForBonusGame() {
+    scores.forEach((score, index) => {
+        if (score >= 800 && score < 1000) {
+            bonusEnabled[index] = true;
+            document.getElementById(`playerName${index + 1}`).style.textDecoration = "line-through";
+        } else {
+            bonusEnabled[index] = false;
+            document.getElementById(`playerName${index + 1}`).style.textDecoration = "none";
+        }
+    });
+}
 
-    if (roundHistory.length === 0) {
-        alert("Nie ma żadnych rund do cofnięcia!");
+function useBonus(playerIndex) {
+    if (!bonusEnabled[playerIndex]) {
+        alert("Ten gracz nie kwalifikuje się do gry pod kreską!");
         return;
     }
 
-    roundHistory.pop();
-    scores[0] = roundHistory.length ? roundHistory[roundHistory.length - 1][0] : 0;
-    scores[1] = roundHistory.length ? roundHistory[roundHistory.length - 1][1] : 0;
-    scores[2] = roundHistory.length ? roundHistory[roundHistory.length - 1][2] : 0;
+    const bonusPoints = 1000 - scores[playerIndex];
+    scores[playerIndex] += bonusPoints;
 
-    pointsTableBody.removeChild(pointsTableBody.children[pointsTableBody.children.length - 2]);
-    currentRound--;
+    addNewRoundRow(`BONUS (${document.getElementById(`playerName${playerIndex + 1}`).textContent})`);
+    updateTotalScores();
+    checkForWinner();
 }
 
-function useBomb(playerIndex) {
-    if (gameEnded) return; // Zablokuj użycie bomby, jeśli gra się skończyła // DODANO
-
-    if (bombUsed[playerIndex]) {
-        alert("Ten gracz już użył bomby!");
-        return;
-    }
-
-    const playerName = document.getElementById(`playerName${playerIndex + 1}`).textContent;
-
-    bombUsed[playerIndex] = true;
-    const bombScores = [60, 60, 60];
-    bombScores[playerIndex] = 0;
-
-    scores[0] += bombScores[0];
-    scores[1] += bombScores[1];
-    scores[2] += bombScores[2];
-
-    addNewRoundRow(`BOMBA (${playerName})`);
-    currentRound++;
-
-    checkForWinner(); // Sprawdź, czy ktoś wygrał po użyciu bomby // DODANO
-}
-
-function checkForWinner() { // DODANO
+function checkForWinner() {
     const winnerIndex = scores.findIndex(score => score >= 1000);
     if (winnerIndex !== -1) {
         const playerName = document.getElementById(`playerName${winnerIndex + 1}`).textContent;
         alert(`Gratulacje! ${playerName} wygrał grę z wynikiem ${scores[winnerIndex]} punktów!`);
-        gameEnded = true; // Zablokuj grę
+        gameEnded = true;
     }
 }
+
 
